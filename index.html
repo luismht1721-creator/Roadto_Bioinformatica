@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Programa de aprendizaje — Bioinformática</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Archivo:wght@400;500;600&family=IBM+Plex+Mono:wght@400;600;700&display=swap');
+
+  :root{
+    --paper:#F3EFE5; --surface:#FBFAF4; --ink:#1B241E; --inkSoft:#4A534B;
+    --muted:#8C8678; --line:#DDD7C8; --green:#33614E; --greenDeep:#243F32;
+    --terra:#C2683C; --amber:#C29A3C; --blue:#3C5E7A; --plum:#6E4361;
+    --display:'Fraunces',Georgia,'Times New Roman',serif;
+    --ui:'Archivo',system-ui,-apple-system,sans-serif;
+    --mono:'IBM Plex Mono',ui-monospace,SFMono-Regular,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--paper);font-family:var(--ui);color:var(--ink);padding:0 0 48px;-webkit-font-smoothing:antialiased;}
+  ::selection{background:var(--green);color:var(--surface);}
+  a{color:inherit;}
+  .wrap{max-width:760px;margin:0 auto;padding:0 18px;}
+
+  header{padding:40px 0 28px;}
+  .kicker{font-family:var(--mono);font-size:11px;letter-spacing:.18em;color:var(--terra);text-transform:uppercase;font-weight:700;margin-bottom:14px;}
+  .head-row{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap;}
+  h1{font-family:var(--display);font-size:38px;font-weight:600;line-height:1.05;margin-bottom:12px;letter-spacing:-.01em;}
+  .lede{font-size:15px;color:var(--inkSoft);line-height:1.55;max-width:460px;}
+  .lede strong{color:var(--green);}
+  .ringbox{text-align:center;}
+  .ringbox .lab{font-family:var(--mono);font-size:10.5px;color:var(--muted);margin-top:6px;letter-spacing:.04em;}
+
+  .rule{height:1px;background:var(--line);margin-bottom:26px;}
+
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:14px;margin-bottom:14px;overflow:hidden;transition:box-shadow .2s ease;}
+  .card.open{box-shadow:0 10px 30px -18px rgba(27,36,30,.35);}
+  .card-head{display:flex;border-left:5px solid var(--ph);}
+  .toggle{flex:1;text-align:left;background:transparent;border:none;cursor:pointer;padding:18px 20px;display:flex;align-items:center;gap:16px;}
+  .num{font-family:var(--display);font-size:30px;font-weight:600;color:var(--ph);line-height:1;font-variant-numeric:tabular-nums;}
+  .tcol{flex:1;}
+  .ttl{display:block;font-family:var(--display);font-size:19px;font-weight:600;line-height:1.15;}
+  .meta{display:block;font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:var(--muted);margin-top:5px;text-transform:uppercase;}
+  .pct{font-family:var(--mono);font-size:12px;color:var(--inkSoft);font-weight:600;background:var(--paper);padding:4px 9px;border-radius:20px;min-width:44px;text-align:center;}
+  .chev{color:var(--muted);font-size:15px;transition:transform .2s ease;}
+  .card.open .chev{transform:rotate(90deg);}
+  .bar{height:3px;background:var(--line);}
+  .bar > i{display:block;height:100%;background:var(--ph);transition:width .5s cubic-bezier(.4,0,.2,1);}
+
+  .body{padding:20px 22px 24px;display:none;}
+  .card.open .body{display:block;}
+  .aim{font-size:14px;color:var(--inkSoft);font-style:italic;margin-bottom:18px;line-height:1.5;border-left:2px solid var(--ph);padding-left:12px;}
+  .slabel{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;color:var(--muted);text-transform:uppercase;margin-bottom:9px;font-weight:600;}
+  ul.skills{list-style:none;margin-bottom:18px;}
+  ul.skills li{font-size:13.5px;line-height:1.5;padding:3px 0 3px 16px;position:relative;}
+  ul.skills li::before{content:"";position:absolute;left:0;top:9px;width:5px;height:5px;border-radius:50%;background:var(--ph);}
+  .res{display:flex;flex-direction:column;gap:6px;margin-bottom:18px;}
+  .res a{font-size:13.5px;color:var(--ph);text-decoration:none;display:flex;align-items:center;gap:7px;font-weight:500;}
+  .res a span{border-bottom:1px solid color-mix(in srgb,var(--ph) 25%,transparent);}
+  .res a:hover span{opacity:.7;}
+  .items{display:flex;flex-direction:column;gap:9px;margin-bottom:18px;}
+  label.item{display:flex;gap:11px;cursor:pointer;align-items:flex-start;}
+  .chk{width:20px;height:20px;flex-shrink:0;margin-top:2px;border-radius:5px;border:1.5px solid var(--line);background:transparent;cursor:pointer;display:grid;place-items:center;padding:0;transition:all .16s ease;}
+  .chk.on{background:var(--ph);border-color:var(--ph);}
+  .chk svg{display:none;}
+  .chk.on svg{display:block;}
+  .item .txt{font-size:14px;line-height:1.45;}
+  .item .txt.done{color:var(--muted);text-decoration:line-through;}
+  .deliver{background:var(--paper);border-radius:10px;padding:12px 14px;display:flex;gap:10px;align-items:flex-start;}
+  .deliver .tag{font-family:var(--mono);font-size:10px;letter-spacing:.08em;color:var(--ph);font-weight:700;text-transform:uppercase;flex-shrink:0;margin-top:2px;}
+  .deliver .d{font-size:13.5px;color:var(--inkSoft);line-height:1.5;}
+
+  .parallel{background:var(--greenDeep);border-radius:14px;padding:22px 22px 24px;margin-top:20px;color:var(--surface);}
+  .parallel .kick{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;color:var(--amber);text-transform:uppercase;font-weight:700;margin-bottom:8px;}
+  .parallel h2{font-family:var(--display);font-size:22px;font-weight:600;margin-bottom:8px;line-height:1.15;}
+  .parallel .note{font-size:13.5px;color:#CDD6CC;line-height:1.55;margin-bottom:16px;}
+  .parallel label.item .chk{border-color:#4d6457;}
+  .parallel label.item .chk.on{background:var(--amber);border-color:var(--amber);}
+  .parallel .txt{color:var(--surface);}
+  .parallel .txt.done{color:#8FA08D;}
+
+  footer{display:flex;justify-content:space-between;align-items:center;margin-top:28px;flex-wrap:wrap;gap:12px;}
+  footer p{font-size:12.5px;color:var(--muted);max-width:480px;line-height:1.5;}
+  .reset{font-family:var(--mono);font-size:11px;letter-spacing:.05em;color:var(--muted);background:transparent;border:1px solid var(--line);border-radius:8px;padding:7px 12px;cursor:pointer;text-transform:uppercase;}
+  .reset:hover{color:var(--ink);border-color:var(--muted);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="kicker">Programa de aprendizaje · 9 meses</div>
+    <div class="head-row">
+      <div style="flex:1;min-width:240px;">
+        <h1>De agronomía a la bioinformática</h1>
+        <p class="lede">Ruta autodirigida hacia el <strong>MSc en Bioinformática (Wageningen)</strong> o el <strong>CBB de ETH Zürich</strong>. El objetivo no es solo estudiar: es producir un artefacto de investigación público que te admita.</p>
+      </div>
+      <div class="ringbox">
+        <svg id="ring" width="92" height="92"></svg>
+        <div class="lab" id="ringlab">0/0 hitos</div>
+      </div>
+    </div>
+  </header>
+  <div class="rule"></div>
+  <div id="phases"></div>
+  <div id="parallel"></div>
+  <footer>
+    <p>Ritmo sugerido: 40 min/día de bioinformática + 20 min/día de inglés. El progreso se guarda solo en este navegador.</p>
+    <button class="reset" id="reset">Reiniciar</button>
+  </footer>
+</div>
+
+<script>
+const STORE_KEY = "plan_bioinfo_v1";
+const COL = { muted:"#8C8678", green:"#33614E", terra:"#C2683C", amber:"#C29A3C", blue:"#3C5E7A", plum:"#6E4361", line:"#DDD7C8", ink:"#1B241E", surface:"#FBFAF4" };
+
+const PHASES = [
+  { id:"p0", n:"00", color:COL.muted, title:"Fundamentos de cómputo", span:"Mes 1",
+    aim:"Dejar de pelear con la computadora. Todo lo demás depende de esto.",
+    skills:["Línea de comandos (Bash): navegación, pipes, grep, awk","Git y GitHub: commits, branches, repos públicos","Entornos reproducibles con conda / mamba","Python base: tipos, control de flujo, funciones"],
+    resources:[{t:"Software Carpentry — The Unix Shell",u:"https://software-carpentry.org/lessons/"},{t:"Software Carpentry — Version Control with Git",u:"https://swcarpentry.github.io/git-novice/"},{t:"Python for Everybody (gratuito)",u:"https://www.py4e.com/"}],
+    milestone:"Repo de GitHub creado, entorno conda funcional, primer commit con un script que corre.",
+    items:["Terminar Unix Shell de Carpentry","Terminar Git novice + subir tu primer repo","Instalar miniforge/mamba y crear un entorno","Completar fundamentos de Python (py4e cap. 1–8)"] },
+  { id:"p1", n:"01", color:COL.amber, title:"Python para biología + estadística", span:"Mes 2",
+    aim:"Cubrir literalmente los requisitos de admisión de Wageningen: secuencias, datos, estadística.",
+    skills:["Biopython: parsear FASTA/GenBank, acceso a NCBI Entrez","pandas + NumPy para manejo de datos","Estadística: distribuciones, t-test, intervalos de confianza, regresión","Notebooks reproducibles (Jupyter)"],
+    resources:[{t:"Rosalind — problemas de bioinformática en Python",u:"https://rosalind.info/problems/list-view/"},{t:"Biopython Tutorial & Cookbook",u:"https://biopython.org/docs/latest/Tutorial/"},{t:"StatQuest (estadística visual, YouTube)",u:"https://www.youtube.com/@statquest"}],
+    milestone:"Notebook que descarga secuencias desde NCBI, calcula composición y genera un análisis estadístico básico.",
+    items:["Resolver 15 problemas de Rosalind","Hacer 1 query a NCBI Entrez con Biopython","Repasar t-test, IC y regresión con StatQuest","Publicar el notebook en tu repo"] },
+  { id:"p2", n:"02", color:COL.green, title:"Bioinformática core: alineamiento y filogenia", span:"Mes 3–4",
+    aim:"El músculo central del bioinformático. Aquí empiezas a verte como uno.",
+    skills:["BLAST: búsqueda de homología","Alineamiento múltiple (MAFFT / MUSCLE)","Modelos evolutivos y máxima verosimilitud","Árboles filogenéticos (IQ-TREE) + bootstrap","Visualización de árboles (iTOL / ggtree)"],
+    resources:[{t:"EMBL-EBI Training — cursos en línea gratuitos",u:"https://www.ebi.ac.uk/training/on-demand"},{t:"IQ-TREE — manual y tutoriales",u:"http://www.iqtree.org/doc/"},{t:"MAFFT — alineador",u:"https://mafft.cbrc.jp/alignment/software/"},{t:"iTOL — visualización de árboles",u:"https://itol.embl.de/"}],
+    milestone:"Reproducir una filogenia publicada de una familia génica vegetal, de cero, documentada.",
+    items:["Correr un BLAST y entender el output","Alinear un set de secuencias con MAFFT","Construir un árbol con IQ-TREE + bootstrap","Reproducir una filogenia de un paper y compararla"] },
+  { id:"p3", n:"03", color:COL.blue, title:"Genómica comparativa — tu proyecto propio", span:"Mes 5–6",
+    aim:"Aquí nace el artefacto que te admite: familias de hiperacumulación en taxa americanos.",
+    skills:["Bases de datos de genomas vegetales (Ensembl Plants, Phytozome)","Ortólogos y parálogos (OrthoFinder)","Dominios proteicos (InterPro, Pfam, HMMER)","Curación del dataset de las familias HMA, PCS, NAS, MTP, ZIP"],
+    resources:[{t:"Ensembl Plants",u:"https://plants.ensembl.org/"},{t:"Phytozome (JGI)",u:"https://phytozome-next.jgi.doe.gov/"},{t:"OrthoFinder",u:"https://github.com/davidemms/OrthoFinder"},{t:"InterPro — dominios proteicos",u:"https://www.ebi.ac.uk/interpro/"}],
+    milestone:"Dataset curado + filogenia de las familias génicas objetivo, con candidatos en especies mexicanas subanotadas.",
+    items:["Definir las especies y familias génicas del proyecto","Recolectar y curar las secuencias","Identificar ortólogos con OrthoFinder","Anotar dominios con InterPro y construir la filogenia"] },
+  { id:"p4", n:"04", color:COL.terra, title:"Selección molecular + escritura científica", span:"Mes 7–8",
+    aim:"Convertir el análisis en un resultado defendible y comunicarlo como científico.",
+    skills:["Tasas dN/dS y firmas de selección","PAML (codeml) / HyPhy","Figuras reproducibles y de calidad publicable","Escritura científica en inglés (estructura IMRyD)"],
+    resources:[{t:"Datamonkey / HyPhy — selección molecular en línea",u:"https://www.datamonkey.org/"},{t:"PAML — manual",u:"http://abacus.gene.ucl.ac.uk/software/paml.html"},{t:"Cómo escribir un paper científico (recursos abiertos EMBL-EBI)",u:"https://www.ebi.ac.uk/training/on-demand"}],
+    milestone:"Borrador de preprint + repositorio documentado, listo para subir a bioRxiv.",
+    items:["Correr análisis de selección (dN/dS)","Generar las figuras finales del proyecto","Escribir el draft del preprint en inglés","Documentar el repo (README, datos, código)"] },
+  { id:"p5", n:"05", color:COL.plum, title:"Aplicación y financiamiento", span:"Mes 9",
+    aim:"Capitalizar el artefacto: admisión + beca. Sin esto, todo lo anterior se queda en hobby.",
+    skills:["Statement of Purpose anclado en tu proyecto real","Cold-email a profesores (PIs) con el preprint","Cartas de recomendación","Becas: CONAHCYT, DAAD, Swiss Excellence Scholarships"],
+    resources:[{t:"Wageningen — admisión MSc Bioinformatics",u:"https://www.wur.nl/en/education-programmes/master/msc-programmes/msc-bioinformatics.htm"},{t:"ETH Zurich — MSc Computational Biology & Bioinformatics",u:"https://cbb.ethz.ch/application-admission.html"},{t:"bioRxiv — subir tu preprint",u:"https://www.biorxiv.org/"}],
+    milestone:"Aplicaciones enviadas (Wageningen ~15 abr; ETH suele cerrar en diciembre) + beca postulada.",
+    items:["Subir el preprint a bioRxiv","Escribir el SOP","Cold-email a 5 PIs relevantes","Postular a 2 becas"] },
+];
+
+const PARALLEL = { id:"en", title:"Inglés académico (paralelo, todo el camino)",
+  note:"Requisito duro: Wageningen pide IELTS 6.0–6.5; ETH exige C1. No es opcional — descuidarlo invalida la admisión.",
+  items:["Diagnóstico inicial de nivel (mock IELTS)","Rutina de lectura/escritura 20 min/día","Examen de práctica completo","Agendar IELTS/TOEFL oficial"] };
+
+// ---- state ----
+let checked = {};
+try { const raw = localStorage.getItem(STORE_KEY); if (raw) checked = JSON.parse(raw); } catch(e){}
+function save(){ try { localStorage.setItem(STORE_KEY, JSON.stringify(checked)); } catch(e){} }
+
+const allIds = [].concat(
+  ...PHASES.map(p => p.items.map((_,i)=>p.id+"-"+i)),
+  PARALLEL.items.map((_,i)=>PARALLEL.id+"-"+i)
+);
+
+const CHECK_SVG = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#FBFAF4" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+
+function el(html){ const t=document.createElement("template"); t.innerHTML=html.trim(); return t.content.firstChild; }
+
+let openId = "p0";
+
+function render(){
+  const host = document.getElementById("phases");
+  host.innerHTML = "";
+  PHASES.forEach(ph => host.appendChild(buildCard(ph)));
+  buildParallel();
+  updateRing();
+}
+
+function buildCard(ph){
+  const done = ph.items.filter((_,i)=>checked[ph.id+"-"+i]).length;
+  const pct = Math.round(done/ph.items.length*100);
+  const card = el('<div class="card"></div>');
+  card.style.setProperty("--ph", ph.color);
+  if (openId===ph.id) card.classList.add("open");
+
+  card.innerHTML =
+    '<div class="card-head"><button class="toggle">'
+    + '<span class="num">'+ph.n+'</span>'
+    + '<span class="tcol"><span class="ttl">'+ph.title+'</span>'
+    + '<span class="meta">'+ph.span+' · '+done+'/'+ph.items.length+' hitos</span></span>'
+    + '<span class="pct">'+pct+'%</span><span class="chev">›</span></button></div>'
+    + '<div class="bar"><i style="width:'+pct+'%"></i></div>'
+    + '<div class="body"></div>';
+
+  card.querySelector(".toggle").addEventListener("click", ()=>{ openId = (openId===ph.id)?null:ph.id; render(); });
+
+  const body = card.querySelector(".body");
+  body.appendChild(el('<p class="aim">'+ph.aim+'</p>'));
+  body.appendChild(el('<div class="slabel">Qué aprendes</div>'));
+  const ul = el('<ul class="skills"></ul>');
+  ph.skills.forEach(s=>ul.appendChild(el('<li>'+s+'</li>')));
+  body.appendChild(ul);
+  body.appendChild(el('<div class="slabel">Recursos gratuitos</div>'));
+  const res = el('<div class="res"></div>');
+  ph.resources.forEach(r=>res.appendChild(el('<a href="'+r.u+'" target="_blank" rel="noreferrer"><span style="border:none">↗</span><span>'+r.t+'</span></a>')));
+  body.appendChild(res);
+  body.appendChild(el('<div class="slabel">Hitos (marca al completar)</div>'));
+  const items = el('<div class="items"></div>');
+  ph.items.forEach((it,i)=>items.appendChild(buildItem(ph.id+"-"+i, it)));
+  body.appendChild(items);
+  body.appendChild(el('<div class="deliver"><span class="tag">Entregable</span><span class="d">'+ph.milestone+'</span></div>'));
+  return card;
+}
+
+function buildItem(id, text){
+  const on = !!checked[id];
+  const lab = el('<label class="item"></label>');
+  const box = el('<button class="chk'+(on?" on":"")+'">'+CHECK_SVG+'</button>');
+  const txt = el('<span class="txt'+(on?" done":"")+'">'+text+'</span>');
+  box.addEventListener("click", (e)=>{ e.preventDefault(); checked[id]=!checked[id]; save(); render(); });
+  lab.appendChild(box); lab.appendChild(txt);
+  return lab;
+}
+
+function buildParallel(){
+  const host = document.getElementById("parallel");
+  host.innerHTML = "";
+  const box = el('<div class="parallel"></div>');
+  box.innerHTML = '<div class="kick">Carril paralelo</div><h2>'+PARALLEL.title+'</h2><p class="note">'+PARALLEL.note+'</p>';
+  const items = el('<div class="items"></div>');
+  PARALLEL.items.forEach((it,i)=>items.appendChild(buildItem(PARALLEL.id+"-"+i, it)));
+  box.appendChild(items);
+  host.appendChild(box);
+}
+
+function updateRing(){
+  const done = allIds.filter(id=>checked[id]).length;
+  const pct = Math.round(done/allIds.length*100);
+  const size=92, stroke=8, r=(size-stroke)/2, circ=2*Math.PI*r, off=circ*(1-pct/100);
+  document.getElementById("ring").innerHTML =
+    '<circle cx="46" cy="46" r="'+r+'" fill="none" stroke="'+COL.line+'" stroke-width="'+stroke+'"></circle>'
+    + '<circle cx="46" cy="46" r="'+r+'" fill="none" stroke="'+COL.green+'" stroke-width="'+stroke+'" stroke-dasharray="'+circ+'" stroke-dashoffset="'+off+'" stroke-linecap="round" transform="rotate(-90 46 46)" style="transition:stroke-dashoffset .6s cubic-bezier(.4,0,.2,1)"></circle>'
+    + '<text x="50%" y="50%" dominant-baseline="central" text-anchor="middle" style="font-family:var(--display);font-size:24px;font-weight:600;fill:'+COL.ink+'">'+pct+'%</text>';
+  document.getElementById("ringlab").textContent = done+"/"+allIds.length+" hitos";
+}
+
+document.getElementById("reset").addEventListener("click", ()=>{ if(confirm("¿Reiniciar todo el progreso?")){ checked={}; save(); render(); } });
+
+render();
+</script>
+</body>
+</html>
